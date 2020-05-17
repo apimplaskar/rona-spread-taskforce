@@ -68,6 +68,9 @@ def BFS_t(Gr,zero,p,d):
         queue.append(zero) 
         infected[zero] = True
         while days_rem > 0:  
+            days_rem-=1
+            print("new day ","infected at start ",k)
+         
             while queue: 
                 s = queue.pop(0) 
                 infected_nodes.append(s)
@@ -79,10 +82,7 @@ def BFS_t(Gr,zero,p,d):
                             k+=1
                                     
                             
-            days_rem-=1
-            print("new day")
-            print("inf",k)
-            queue.append(rand.randint(0, len(infected_nodes)))            
+            queue.append(rand.randint(0, len(infected_nodes)))          
         print("inf",k)           
         return infected_nodes
     
