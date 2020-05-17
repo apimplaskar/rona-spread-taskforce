@@ -52,7 +52,7 @@ def BFS(Gr,zero,p):
             
 print(BFS(G,10,0.2))
 
-def BFS_t(Gr,zero,p,d): 
+def BFS_t(Gr,zero,p,q,s,h,d): 
   
         # Mark all the vertices as not visited 
         infected = [False] * Gr.number_of_nodes()
@@ -63,27 +63,44 @@ def BFS_t(Gr,zero,p,d):
         # Create a queue for BFS 
         queue = [] 
         infected_nodes = []
+        symptomatic_nodes = []
+        quarantined_nodes = []
         # Mark the source node as  
         # visited and enqueue it 
         queue.append(zero) 
         infected[zero] = True
+        infected_nodes.append(zero)
         while days_rem > 0:  
             days_rem-=1
-            print("new day ","infected at start ",k)
-         
+            print("day ",(d-days_rem)," infected at start ",k)       
             while queue: 
                 s = queue.pop(0) 
-                infected_nodes.append(s)
                 for i in Gr.neighbors(s): 
                     if infected[i]==False:
-                        if rand.uniform(0,10) < p*10:
-                            infected[i] = True
-                            queue.append(i) 
-                            k+=1
-                                    
-                            
-            queue.append(rand.randint(0, len(infected_nodes)))          
+                        if symptomatic[s]==True:
+                            if rand.uniform(0,10) < p*10:
+                                infected[i] = True
+                                infected_nodes.append(i)
+                                k+=1
+                        else:
+                            if rand.uniform(0,10) < q*10:
+                                infected[i] = True
+                                infected_nodes.append(i)
+                                k+=1       
+                
+            for i in infected_nodes:
+                if symptomatic[i] == False:
+                        if rand.uniform(0,10) < s*(d-days_rem)*10:
+                                symptomatic[i] = True
+                                symptomatic_nodes.append(i)
+                if symptomatic[i]==True and quarantined[i] == False:
+                        if rand.uniform(0,10) < h*10:
+                                quarantined[i] = True    
+                                quarantined_nodes.append(i)
+                
+                if quarantined[i] == False:
+                    queue.append(i)
         print("inf",k)           
-        return infected_nodes
+        return [infected_nodes,quarantined_nodes,symptomatic_nodes]
     
-print(BFS_t(G,10,0.08,7))    
+print(BFS_t(G,10,0.7,0.5,0.9,0.7,28))    
