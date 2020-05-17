@@ -1,4 +1,4 @@
-# rona-spread-taskforce
+# Network-based simulation of disease transmission
 
 ### Contributors:
 Aditya Pimplaskar
