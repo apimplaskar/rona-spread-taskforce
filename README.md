@@ -1,4 +1,5 @@
-# rona-spread-taskforce
+# Network-based simulation of disease transmission
+### Project for Math 168: Networks 
 
 ### Contributors:
 Aditya Pimplaskar
@@ -6,3 +7,5 @@ Aditya Pimplaskar
 Daniel Koo
 
 Aleksandre Ninua
+
+
