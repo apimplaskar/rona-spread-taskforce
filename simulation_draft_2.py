@@ -5,7 +5,6 @@ Created on Sun May 17 14:14:33 2020
 @author: Aleksandre
 """
 
-
 import networkx as nx
 import numpy as np
 import numpy.random as rand
@@ -19,25 +18,25 @@ G = nx.gnp_random_graph(300,0.15)
 
 
 def BFS_t(Gr,zero,p,s,h,r,x,d):
-    
+
         #Prameters:
         #Gr - Graph
         #zero - patient zero
-        #p - probability of transmitting infection 
+        #p - probability of transmitting infection
             #by a symptomatic host at every itneraction
         #s - probability of developing symptoms once infected
         #h - probability of quarantining once symptomatic
         #r - probability of recovering
         #x - probability of death
         #d - number of days simulation is run
-        
+
         if d%2 == 0:
             nrows = int(d/2)
         else:
             nrows = int(d/2)+1
         ncols = 2
         f, axes = plt.subplots(nrows, ncols, figsize = (40,40))
-        
+
 
         #Status arrays
         infected = [False] * Gr.number_of_nodes()
@@ -59,7 +58,7 @@ def BFS_t(Gr,zero,p,s,h,r,x,d):
         quarantined_nodes = []
         recovered_nodes = []
         deceased_nodes = []
-        
+
         queue.append(zero)
         infected[zero] = True
         infected_nodes.append(zero)
@@ -112,8 +111,8 @@ def BFS_t(Gr,zero,p,s,h,r,x,d):
 
                     if quarantined[i] == False and recovered[i] == False and deceased == False:
                         queue.append(i)
-                        
-        
+
+
         colvec = [0]* Gr.number_of_nodes()
         for i in range(Gr.number_of_nodes()):
             if quarantined[i]:
@@ -124,16 +123,16 @@ def BFS_t(Gr,zero,p,s,h,r,x,d):
                 colvec[i] = 'y'
             else:
                 colvec[i] = 'g'
-        
-        
-                
+
+
+
         #n = nx.draw_networkx(Gr, pos=nx.kamada_kawai_layout(Gr), node_color=colvec, cmap=plt.cm.rainbow, ax = axes[int((d-days_rem-1)/2)][(d-days_rem-1)%2]) #visualizes
         layout = nx.kamada_kawai_layout(Gr)
         nx.draw_networkx_nodes(Gr, pos = layout, node_color = colvec, ax = axes[int((d-days_rem-1)/2)][(d-days_rem-1)%2])
         nx.draw_networkx_edges(Gr, pos = layout, ax = axes[int((d-days_rem-1)/2)][(d-days_rem-1)%2])
         #sm = plt.cm.ScalarMappable(cmap=plt.cm.rainbow, norm = None)
         #m.set_array([])
-        #cbar = plt.colorbar(sm)                
+        #cbar = plt.colorbar(sm)
         return [infected_nodes,quarantined_nodes,symptomatic_nodes,recovered_nodes,deceased_nodes]
 
 print(BFS_t(G,10,0.3,0.9,0.7,0.02,0.001,7))
