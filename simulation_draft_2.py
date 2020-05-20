@@ -6,108 +6,139 @@ Created on Sun May 17 14:14:33 2020
 """
 
 import networkx as nx
-import random as rand
+import numpy as np
+import numpy.random as rand
+from collections import deque
 import matplotlib.pyplot as plt
 
-G = nx.gnp_random_graph(1000,0.15)
-nx.draw(G)
 
-def BFS(Gr,zero,p):
+G = nx.gnp_random_graph(300,0.15)
 
-        # Mark all the vertices as not visited
+
+
+
+def BFS_t(Gr,zero,p,s,h,r,x,d):
+
+        #Prameters:
+        #Gr - Graph
+        #zero - patient zero
+        #p - probability of transmitting infection
+            #by a symptomatic host at every itneraction
+        #s - probability of developing symptoms once infected
+        #h - probability of quarantining once symptomatic
+        #r - probability of recovering
+        #x - probability of death
+        #d - number of days simulation is run
+        
+        if d%2 == 0:
+            nrows = int(d/2)
+        else:
+            nrows = int(d/2)+1
+        ncols = 2
+        f, axes = plt.subplots(nrows, ncols, figsize = (40,40))
+
+        # Plotting variables
+        days = [i for i in range(1,d+1)]
+        numInfected = []
+        #Status arrays
         infected = [False] * Gr.number_of_nodes()
-        k=1
-        # Create a queue for BFS
+        symptomatic = [False] * Gr.number_of_nodes()
+        quarantined = [False] * Gr.number_of_nodes()
+        recovered = [False] * Gr.number_of_nodes()
+        deceased = [False] * Gr.number_of_nodes()
+        infected_days = [0] * Gr.number_of_nodes()
+        symptomatic_days = [0] * Gr.number_of_nodes()
+        #Metrics
+        inf = 1
+        rec = 0
+        dead = 0
+        days_rem = d
+        #Result arrays
         queue = []
         infected_nodes = []
-        # Mark the source node as
-        # visited and enqueue it
+        symptomatic_nodes = []
+        quarantined_nodes = []
+        recovered_nodes = []
+        deceased_nodes = []
+
         queue.append(zero)
         infected[zero] = True
+        infected_nodes.append(zero)
+        while days_rem > 0:
+            days_rem-=1
+            print("day ",(d-days_rem)," infected at start ",inf," recovered ",rec, " deceased ",dead)
+            while queue:
+                s = queue.pop(0)
+                for i in Gr.neighbors(s):
+                    if infected[i]==False and recovered[i] == False:
+                            if rand.uniform(0,10) < p*10:
+                                infected[i] = True
+                                infected_nodes.append(i)
+                                inf+=1
 
-        while queue:
+            for i in range(0,len(infected)):
+                if infected[i] == True:
+                    infected_days[i]+=1
+                    if symptomatic[i] == False:
+                            if rand.uniform(0,10) < s*(d-days_rem)*10:
+                                    symptomatic[i] = True
+                                    symptomatic_nodes.append(i)
+                            elif rand.uniform(0,10) < r*10:
+                                        recovered[i] = True
+                                        rec+=1
+                                        recovered_nodes.append(i)
+                                        quarantined[i] = False
+                                        infected[i] = False
+                                        symptomatic[i] = False
+                    if symptomatic[i]==True:
+                            symptomatic_days[i]+=1
+                            if quarantined[i] == False:
+                                if rand.uniform(0,10) < h*10:
+                                        quarantined[i] = True
+                                        quarantined_nodes.append(i)
+                            if rand.uniform(0,10) < r*10:
+                                        recovered[i] = True
+                                        rec+=1
+                                        recovered_nodes.append(i)
+                                        quarantined[i] = False
+                                        infected[i] = False
+                                        symptomatic[i] = False
+                            if rand.uniform(0,10) < x*10:
+                                        deceased[i] = True
+                                        dead+=1
+                                        deceased_nodes.append(i)
+                                        infected[i] = False
+                                        symptomatic[i] = False
+                                        quarantined[i] = False
 
-            # Dequeue a vertex from
-            # queue and print it
-            s = queue.pop(0)
-            infected_nodes.append(s)
-
-            # Get all adjacent vertices of the
-            # dequeued vertex s. If a adjacent
-            # has not been visited, then mark it
-            # visited and enqueue it
-            for i in Gr.neighbors(s):
-                if infected[i]==False:
-                    if rand.uniform(0,10) < p*10:
-                        infected[i] = True
+                    if quarantined[i] == False and recovered[i] == False and deceased[i] == False:
                         queue.append(i)
-                        k+=1
-
-        #for i in range(0,len(infected)):
-          #  if infected[i]==True:
-          #      print(i)
-        print("inf",k)
-        return infected_nodes
             
-#print(BFS(G,10,0.2))
-#def pBecomeSymptomatic(t):
+            numInfected.append(inf)
 
-def BFS_t(Gr,zero,p_symp,p_asymp,p_become_symp,p_qrnt,d):
-    days = [i for i in range(1, d+1)]
-    numInfected = []
-    # Mark all the vertices as not visited
-    infected = [False] * Gr.number_of_nodes()
-    symptomatic = [False] * Gr.number_of_nodes()
-    quarantined = [False] * Gr.number_of_nodes()
-    k=1
-    days_rem = d
-    # Create a queue for BFS
-    queue = []
-    infected_nodes = []
-    symptomatic_nodes = []
-    quarantined_nodes = []
-    # Mark the source node as
-    # visited and enqueue it
-    queue.append(zero)
-    infected[zero] = True
-    infected_nodes.append(zero)
-    while days_rem > 0:
-        days_rem-=1
-        print("day ",(d-days_rem)," infected at start ",k)
-        while queue:
-            s = queue.pop(0)
-            for i in Gr.neighbors(s):
-                if infected[i]==False:
-                    if symptomatic[s]==True:
-                        if rand.uniform(0,10) < p_symp*10:
-                            infected[i] = True
-                            infected_nodes.append(i)
-                            k+=1
-                    else:
-                        if rand.uniform(0,10) < p_asymp*10:
-                            infected[i] = True
-                            infected_nodes.append(i)
-                            k+=1
+        colvec = [0]* Gr.number_of_nodes()
+        for i in range(Gr.number_of_nodes()):
+            if quarantined[i]:
+                colvec[i] = 'b'
+            elif symptomatic[i]:
+                colvec[i] = 'r'
+            elif infected[i]:
+                colvec[i] = 'y'
+            else:
+                colvec[i] = 'g'
 
-        for i in infected_nodes:
-            if symptomatic[i] == False:
-                    if rand.uniform(0,10) < p_become_symp*(d-days_rem)*10:
-                            symptomatic[i] = True
-                            symptomatic_nodes.append(i)
-            if symptomatic[i]==True and quarantined[i] == False:
-                    if rand.uniform(0,10) < p_qrnt*10:
-                            quarantined[i] = True
-                            quarantined_nodes.append(i)
+        #n = nx.draw_networkx(Gr, pos=nx.kamada_kawai_layout(Gr), node_color=colvec, cmap=plt.cm.rainbow, ax = axes[int((d-days_rem-1)/2)][(d-days_rem-1)%2]) #visualizes
+        layout = nx.kamada_kawai_layout(Gr)
+        nx.draw_networkx_nodes(Gr, pos = layout, node_color = colvec, ax = axes[int((d-days_rem-1)/2)][(d-days_rem-1)%2])
+        nx.draw_networkx_edges(Gr, pos = layout, ax = axes[int((d-days_rem-1)/2)][(d-days_rem-1)%2])
+        #sm = plt.cm.ScalarMappable(cmap=plt.cm.rainbow, norm = None)
+        #m.set_array([])
+        #cbar = plt.colorbar(sm)
 
-            if quarantined[i] == False:
-                queue.append(i)
-        
-        numInfected.append(k)
+        plt.figure()
+        plt.plot(days, numInfected)
+        plt.show()
 
-    plt.figure()
-    plt.plot(days, numInfected)
-    plt.show()
-    print("inf",k)
-    return [infected_nodes,quarantined_nodes,symptomatic_nodes]
+        return [infected_nodes,quarantined_nodes,symptomatic_nodes,recovered_nodes,deceased_nodes]
 
-print(BFS_t(G,10,0.2,0.2,0.495,0.7,7)) 
+print(BFS_t(G,10,0.3,0.9,0.7,0.02,0.001,7))
