@@ -110,4 +110,4 @@ def BFS_t(Gr,zero,p_symp,p_asymp,p_become_symp,p_qrnt,d):
     print("inf",k)
     return [infected_nodes,quarantined_nodes,symptomatic_nodes]
 
-print(BFS_t(G,10,0.2,0.1,0.495,0.7,7)) 
+print(BFS_t(G,10,0.2,0.2,0.495,0.7,7)) 
