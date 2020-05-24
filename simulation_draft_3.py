@@ -11,11 +11,9 @@ import numpy.random as rand
 from collections import deque
 import matplotlib.pyplot as plt
 import math
-
+import scipy.stats
 
 G = nx.gnp_random_graph(300,0.15)
-
-
 
 
 def BFS_t(Gr,zero,p,s,h,r,x,d):
