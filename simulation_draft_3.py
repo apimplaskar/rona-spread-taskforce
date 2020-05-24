@@ -53,6 +53,13 @@ def BFS_t(Gr,zero,p,s,h,r,x,d):
         recovered_nodes = []
         deceased_nodes = []
 
+        # element at position i is the number of infected people on day i
+        num_infected_per_day    = []
+        num_symptomatic_per_day = []
+        num_quarantined_per_day = []
+        num_recovered_per_day   = []
+        num_deceased_per_day    = []
+
         queue.append(zero)
         infected[zero] = True
         infected_nodes.append(zero)
@@ -112,7 +119,13 @@ def BFS_t(Gr,zero,p,s,h,r,x,d):
                     if quarantined[i] == False and recovered[i] == False and deceased[i] == False:
                         queue.append(i)
 
+            # Update per-day numbers
+            num_infected_per_day.append(inf)
+            num_symptomatic_per_day.append(len(symptomatic_nodes))
+            num_quarantined_per_day.append(len(quarantined_nodes))
+            num_recovered_per_day.append(len(recovered_nodes))
+            num_deceased_per_day.append(len(deceased_nodes))
                     
-        return [infected_nodes,quarantined_nodes,symptomatic_nodes,recovered_nodes,deceased_nodes]
+        return [infected_nodes,quarantined_nodes,symptomatic_nodes,recovered_nodes,deceased_nodes, num_infected_per_day, num_quarantined_per_day, num_symptomatic_per_day, num_recovered_per_day, num_deceased_per_day]
 
 print(BFS_t(G,10,0.3,0.9,0.3,0.02,0.001,28))
