@@ -30,12 +30,12 @@ def BFS_t(Gr,zero,p,s,h,r,x,d):
         #x - probability of death
         #d - number of days simulation is run
 
-        if d%2 == 0:
-            nrows = int(d/2)
-        else:
-            nrows = int(d/2)+1
-        ncols = 2
-        f, axes = plt.subplots(nrows, ncols, figsize = (40,40))
+        #if d%2 == 0:
+           # nrows = int(d/2)
+        #else:
+          #  nrows = int(d/2)+1
+        #ncols = 2
+        #f, axes = plt.subplots(nrows, ncols, figsize = (40,40))
 
 
         #Status arrays
@@ -68,11 +68,11 @@ def BFS_t(Gr,zero,p,s,h,r,x,d):
             while queue:
                 s = queue.pop(0)
                 for i in Gr.neighbors(s):
-                    if infected[i]==False and recovered[i] == False:
-                            if rand.uniform(0,10) < p*10:
-                                infected[i] = True
-                                infected_nodes.append(i)
-                                inf+=1
+                    if infected[i]==False and recovered[i] == False and deceased[i] == False:
+                        if rand.uniform(0,10) < p*10:
+                            infected[i] = True
+                            infected_nodes.append(i)
+                            inf+=1
 
             for i in range(0,len(infected)):
                 if infected[i] == True:
@@ -109,7 +109,7 @@ def BFS_t(Gr,zero,p,s,h,r,x,d):
                                         symptomatic[i] = False
                                         quarantined[i] = False
 
-                    if quarantined[i] == False and recovered[i] == False and deceased == False:
+                    if quarantined[i] == False and recovered[i] == False and deceased[i] == False:
                         queue.append(i)
 
 
@@ -127,9 +127,9 @@ def BFS_t(Gr,zero,p,s,h,r,x,d):
 
 
         #n = nx.draw_networkx(Gr, pos=nx.kamada_kawai_layout(Gr), node_color=colvec, cmap=plt.cm.rainbow, ax = axes[int((d-days_rem-1)/2)][(d-days_rem-1)%2]) #visualizes
-        layout = nx.kamada_kawai_layout(Gr)
-        nx.draw_networkx_nodes(Gr, pos = layout, node_color = colvec, ax = axes[int((d-days_rem-1)/2)][(d-days_rem-1)%2])
-        nx.draw_networkx_edges(Gr, pos = layout, ax = axes[int((d-days_rem-1)/2)][(d-days_rem-1)%2])
+       # layout = nx.kamada_kawai_layout(Gr)
+        #nx.draw_networkx_nodes(Gr, pos = layout, node_color = colvec, ax = axes[int((d-days_rem-1)/2)][(d-days_rem-1)%2])
+        #nx.draw_networkx_edges(Gr, pos = layout, ax = axes[int((d-days_rem-1)/2)][(d-days_rem-1)%2])
         #sm = plt.cm.ScalarMappable(cmap=plt.cm.rainbow, norm = None)
         #m.set_array([])
         #cbar = plt.colorbar(sm)
