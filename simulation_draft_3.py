@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import math
 import scipy.stats as stats
 
-G = nx.gnp_random_graph(1000,0.15)
+G = nx.gnp_random_graph(1000,0.02)
 # x = np.linspace (0, 100, 200)
 
 # y1 = stats.gamma.pdf(x, a=4.94, scale=1/.26)
@@ -118,7 +118,6 @@ def BFS_t(Gr,zero,p,h,d):
                                         recovered[i] = True
                                         rec+=1
                                         recovered_nodes.append(i)
-                                        quarantined[i] = False
                                         infected[i] = False
                                         symptomatic[i] = False
                     else:
@@ -126,7 +125,6 @@ def BFS_t(Gr,zero,p,h,d):
                                         recovered[i] = True
                                         rec+=1
                                         recovered_nodes.append(i)
-                                        quarantined[i] = False
                                         infected[i] = False
                                         symptomatic[i] = False
                             elif rand.uniform(0,10) < stats.gamma.pdf(infected_days[i], a=4.94, scale=1/.26)*10:
@@ -135,7 +133,6 @@ def BFS_t(Gr,zero,p,h,d):
                                         deceased_nodes.append(i)
                                         infected[i] = False
                                         symptomatic[i] = False
-                                        quarantined[i] = False
 
                     if quarantined[i] == False and recovered[i] == False and deceased[i] == False:
                         queue.append(i)
@@ -164,7 +161,7 @@ starting_node = 10
 beta = 0.3
 quarantine = 0.6
 days = 28
-res = BFS_t(G,10,0.3,0.6,28)
+res = BFS_t(G,starting_node,beta,quarantine,days)
 
 print(res)
 plot_numbers_per_day(res[5:])
