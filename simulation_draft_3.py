@@ -14,31 +14,31 @@ import math
 import scipy.stats as stats
 
 G = nx.gnp_random_graph(1000,0.15)
-x = np.linspace (0, 100, 200)
+# x = np.linspace (0, 100, 200)
 
-y1 = stats.gamma.pdf(x, a=4.94, scale=1/.26)
-plt.plot(x, y1, "y-", label=(r'$\alpha=29, \beta=3$'))
-
-
-plt.ylim([0,.2])
-plt.xlim([0,60])
-plt.show()
-
-y2 = stats.gamma.pdf(x, a=8.16, scale=1/.33)
-plt.plot(x, y2, "y-", label=(r'$\alpha=29, \beta=3$'))
+# y1 = stats.gamma.pdf(x, a=4.94, scale=1/.26)
+# plt.plot(x, y1, "y-", label=(r'$\alpha=29, \beta=3$'))
 
 
-plt.ylim([0,.2])
-plt.xlim([0,60])
-plt.show()
+# plt.ylim([0,.2])
+# plt.xlim([0,60])
+# plt.show()
 
-y3 = stats.gamma.pdf(x, a=5.81, scale=1/0.95)
-plt.plot(x, y3, "y-", label=(r'$\alpha=29, \beta=3$'))
+# y2 = stats.gamma.pdf(x, a=8.16, scale=1/.33)
+# plt.plot(x, y2, "y-", label=(r'$\alpha=29, \beta=3$'))
 
 
-plt.ylim([0,.2])
-plt.xlim([0,60])
-plt.show()
+# plt.ylim([0,.2])
+# plt.xlim([0,60])
+# plt.show()
+
+# y3 = stats.gamma.pdf(x, a=5.81, scale=1/0.95)
+# plt.plot(x, y3, "y-", label=(r'$\alpha=29, \beta=3$'))
+
+
+# plt.ylim([0,.2])
+# plt.xlim([0,60])
+# plt.show()
 
 
 def BFS_t(Gr,zero,p,h,d):
@@ -159,9 +159,8 @@ def plot_numbers_per_day(res):
         ax.plot(days, res[p], label=labels[p])
         ax.legend(loc="upper right")
 
-    plt.show()
-
 res = BFS_t(G,10,0.3,0.6,28)
 
 print(res)
-plot_numbers_per_day(res)
+plot_numbers_per_day(res[5:])
+
