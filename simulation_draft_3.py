@@ -151,10 +151,9 @@ def BFS_t(Gr,zero,p,h,d):
 
 def plot_numbers_per_day(res):
     for i in range(5,10):
-
-    days = [i for i in range(1,29)]
-    labels = ["Infected Per Day", "Quarantined Per Day", "Symptomatic Per Day", "Recovered Per Day", "Deceased Per Day"]
-    fig = plt.figure()
+        days = [i for i in range(1,29)]
+        labels = ["Infected Per Day", "Quarantined Per Day", "Symptomatic Per Day", "Recovered Per Day", "Deceased Per Day"]
+        fig = plt.figure()
 
     for p in range(5,8):
         ax = fig.add_subplot(111)
