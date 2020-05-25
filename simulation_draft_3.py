@@ -163,4 +163,4 @@ res = BFS_t(G,10,0.3,0.6,28)
 
 print(res)
 plot_numbers_per_day(res[5:])
-
+plt.show()
