@@ -159,8 +159,14 @@ def plot_numbers_per_day(res):
         ax.plot(days, res[p], label=labels[p])
         ax.legend(loc="upper right")
 
+
+starting_node = 10
+beta = 0.3
+quarantine = 0.6
+days = 28
 res = BFS_t(G,10,0.3,0.6,28)
 
 print(res)
 plot_numbers_per_day(res[5:])
+print(res[6])
 plt.show()
