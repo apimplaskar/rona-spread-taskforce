@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import math
 import scipy.stats as stats
 
-G = nx.gnp_random_graph(1000,0.1)
+G = nx.gnp_random_graph(500,0.1)
 # x = np.linspace (0, 100, 200)
 
 # y1 = stats.gamma.pdf(x, a=4.94, scale=1/.26)
@@ -162,6 +162,24 @@ def BFS_t(Gr,zero,p,h,d):
 
         return [infected_nodes,quarantined_nodes,symptomatic_nodes,recovered_nodes,deceased_nodes, num_infected_per_day, num_quarantined_per_day, num_symptomatic_per_day, num_recovered_per_day, num_deceased_per_day,num_total_infected,num_sus]
 
+# Returns the average total number of infections per day over n realizations
+def multi_BFS_t(Gr, zero, beta, qrnt, days, n):
+    avg_total_inf_per_day = [0] * days
+
+    for i in range(n):
+        print("Simulating realization ", i, "...")
+        res = BFS_t(Gr, zero, beta, qrnt, days)
+        inf_per_day = res[10]
+        for j in range(days):
+            print("Day ", j, ", total infections: ", inf_per_day[j])
+            avg_total_inf_per_day[j] += inf_per_day[j]
+
+    for k in range(days):
+        avg_total_inf_per_day[k] /= n
+    
+    print(avg_total_inf_per_day)
+    return avg_total_inf_per_day
+
 def plot_numbers_per_day(res, beta, qrnt, days):
     days_axis = [i for i in range(1, days+1)]
     labels = ["Infected Per Day", "Cumulative Quarantined", "Symptomatic Per Day", "Recovered Per Day", "Deceased Per Day","Total infections","Susceptible"]
@@ -176,11 +194,14 @@ def plot_numbers_per_day(res, beta, qrnt, days):
 
 starting_node = 10
 beta = 0.1
-quarantine = 0.08
-days = 60
-res = BFS_t(G,starting_node,beta,quarantine,days)
+quarantine = 0
+days = 7
+#res = BFS_t(G,starting_node,beta,quarantine,days)
 
-print(res)
-plot_numbers_per_day(res[5:], beta, quarantine, days)
-print(res[6])
+days_arr = [i for i in range(1,days+1)]
+plt.plot(days_arr, multi_BFS_t(G, starting_node, beta, quarantine, days, 15))
 plt.show()
+# print(res)
+# plot_numbers_per_day(res[5:], beta, quarantine, days)
+# print(res[6])
+# plt.show()
