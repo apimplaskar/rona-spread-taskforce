@@ -180,7 +180,7 @@ def plot_numbers_per_day(res, beta, qrnt, days):
     labels = ["Infected Per Day", "Cumulative Quarantined", "Symptomatic Per Day", "Recovered Per Day", "Deceased Per Day","Total infections","Susceptible"]
     fig = plt.figure()
 
-    fig.suptitle("Beta = " + str(beta) + " Quarantine Rate = " + str(qrnt), fontsize=16)
+    fig.suptitle("Beta = " + str(beta) + ", Quarantine Rate = " + str(qrnt), fontsize=12)
     for p in range(len(res)):
         ax = fig.add_subplot(111)
         ax.plot(days_axis, res[p], label=labels[p])
