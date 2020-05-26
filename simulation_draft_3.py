@@ -175,7 +175,7 @@ def BFS_t(Gr,zero,p,h,d,s,x,r):
 
         return [infected_nodes,quarantined_nodes,symptomatic_nodes,recovered_nodes,deceased_nodes, num_infected_per_day, num_quarantined_per_day, num_symptomatic_per_day, num_recovered_per_day, num_deceased_per_day,num_total_infected,num_sus]
 
-def plot_numbers_per_day(res, beta, qrnt, days):
+def plot_numbers_per_day(res, beta, qrnt, days, s_rate,x_rate, r_rate):
     days_axis = [i for i in range(1, days+1)]
     labels = ["Infected Per Day", "Cumulative Quarantined", "Symptomatic Per Day", "Recovered Per Day", "Deceased Per Day","Total infections","Susceptible"]
     fig = plt.figure()
