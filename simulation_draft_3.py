@@ -74,13 +74,13 @@ def BFS_t(Gr,zero,p,h,d,s,x,r):
         recovery_rate = [r] * Gr.number_of_nodes()
         symptom_rate = [s] * Gr.number_of_nodes()
         
-        if x > 0:
+        if x == 0:
             for i in range(0,Gr.number_of_nodes()):
                 death_rate[i] = 1/np.random.gamma(4.94, 1/.26)
-        if r > 0:
+        if r == 0:
             for i in range(0,Gr.number_of_nodes()):        
                 recovery_rate[i] = 1/np.random.gamma(8.16, 1/.33)
-        if s > 0:
+        if s == 0:
             for i in range(0,Gr.number_of_nodes()):          
                 symptom_rate[i] = 1/np.random.gamma(5.81, 1/0.95)      
         
@@ -194,7 +194,7 @@ days = 60
 s_rate = 0
 r_rate = 0
 x_rate = 0
-res = BFS_t(G,starting_node,beta,quarantine,days)
+res = BFS_t(G,starting_node,beta,quarantine,days,s_rate,x_rate, r_rate)
 
 
 print(res)
