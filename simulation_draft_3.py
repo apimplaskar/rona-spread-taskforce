@@ -149,9 +149,9 @@ def BFS_t(Gr,zero,p,h,d):
 def plot_numbers_per_day(res, beta, qrnt, days):
     days_axis = [i for i in range(1, days+1)]
     labels = ["Infected Per Day", "Quarantined Per Day", "Symptomatic Per Day", "Recovered Per Day", "Deceased Per Day"]
-    fig = plt.figure()
+    fig = plt.figure(figsize=(10,10))
 
-    fig.suptitle("Beta = " + str(beta) + " Quarantine Rate = " + str(qrnt), fontsize=16)
+    fig.suptitle("Beta = " + str(beta) + ", Quarantine Rate = " + str(qrnt), fontsize=12)
     for p in range(len(res)):
         ax = fig.add_subplot(111)
         ax.plot(days_axis, res[p], label=labels[p])
