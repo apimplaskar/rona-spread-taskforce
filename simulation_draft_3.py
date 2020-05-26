@@ -81,6 +81,8 @@ def BFS_t(Gr,zero,p,h,d):
         num_quarantined_per_day = []
         num_recovered_per_day   = []
         num_deceased_per_day    = []
+        num_total_infected    = []
+        num_sus = []
 
         queue.append(zero)
         infected[zero] = True
@@ -117,22 +119,34 @@ def BFS_t(Gr,zero,p,h,d):
                             elif rand.uniform(0,10) < stats.gamma.pdf(infected_days[i], a=8.16, scale=1/.33)*10:
                                         recovered[i] = True
                                         rec+=1
+                                        inf-=1
                                         recovered_nodes.append(i)
                                         infected[i] = False
                                         symptomatic[i] = False
+                                        infected_nodes.remove(i)
                     else:
-                            if rand.uniform(0,10) < stats.gamma.pdf(infected_days[i], a=8.16, scale=1/.33)*10:
+                            if infected_days[i]>25:
+                                rec_rate = math.log(infected_days[i]-25)+stats.gamma.pdf(infected_days[i], a=8.16, scale=1/.33)
+                            else:
+                                rec_rate = stats.gamma.pdf(infected_days[i], a=8.16, scale=1/.33)
+                            if rand.uniform(0,10) < rec_rate*10:
                                         recovered[i] = True
                                         rec+=1
+                                        inf-=1
                                         recovered_nodes.append(i)
                                         infected[i] = False
                                         symptomatic[i] = False
+                                        symptomatic_nodes.remove(i)
+                                        infected_nodes.remove(i)
                             elif rand.uniform(0,10) < stats.gamma.pdf(infected_days[i], a=4.94, scale=1/.26)*10:
                                         deceased[i] = True
                                         dead+=1
+                                        inf-=1
                                         deceased_nodes.append(i)
                                         infected[i] = False
                                         symptomatic[i] = False
+                                        symptomatic_nodes.remove(i)
+                                        infected_nodes.remove(i)
 
                     if quarantined[i] == False and recovered[i] == False and deceased[i] == False:
                         queue.append(i)
@@ -143,13 +157,15 @@ def BFS_t(Gr,zero,p,h,d):
             num_quarantined_per_day.append(len(quarantined_nodes))
             num_recovered_per_day.append(rec)
             num_deceased_per_day.append(dead)
+            num_total_infected.append(inf+rec+dead)
+            num_sus.append(Gr.number_of_nodes()-inf-rec-dead)
 
-        return [infected_nodes,quarantined_nodes,symptomatic_nodes,recovered_nodes,deceased_nodes, num_infected_per_day, num_quarantined_per_day, num_symptomatic_per_day, num_recovered_per_day, num_deceased_per_day]
+        return [infected_nodes,quarantined_nodes,symptomatic_nodes,recovered_nodes,deceased_nodes, num_infected_per_day, num_quarantined_per_day, num_symptomatic_per_day, num_recovered_per_day, num_deceased_per_day,num_total_infected,num_sus]
 
 def plot_numbers_per_day(res, beta, qrnt, days):
     days_axis = [i for i in range(1, days+1)]
-    labels = ["Infected Per Day", "Quarantined Per Day", "Symptomatic Per Day", "Recovered Per Day", "Deceased Per Day"]
-    fig = plt.figure(figsize=(10,10))
+    labels = ["Infected Per Day", "Cumulative Quarantined", "Symptomatic Per Day", "Recovered Per Day", "Deceased Per Day","Total infections","Susceptible"]
+    fig = plt.figure()
 
     fig.suptitle("Beta = " + str(beta) + ", Quarantine Rate = " + str(qrnt), fontsize=12)
     for p in range(len(res)):
@@ -161,7 +177,7 @@ def plot_numbers_per_day(res, beta, qrnt, days):
 starting_node = 10
 beta = 0.1
 quarantine = 0.08
-days = 28
+days = 60
 res = BFS_t(G,starting_node,beta,quarantine,days)
 
 print(res)
