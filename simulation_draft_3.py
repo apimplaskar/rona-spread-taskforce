@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import math
 import scipy.stats as stats
 
-G = nx.gnp_random_graph(1000,0.1)
+G = nx.gnp_random_graph(300,0.1)
 # x = np.linspace (0, 100, 200)
 
 # y1 = stats.gamma.pdf(x, a=4.94, scale=1/.26)
@@ -41,7 +41,7 @@ G = nx.gnp_random_graph(1000,0.1)
 # plt.show()
 
 
-def BFS_t(Gr,zero,p,h,d):
+def BFS_t(Gr,zero,p,h,d,s,x,r):
 
         #Prameters:
         #Gr - Graph
@@ -62,11 +62,28 @@ def BFS_t(Gr,zero,p,h,d):
         recovered = [False] * Gr.number_of_nodes()
         deceased = [False] * Gr.number_of_nodes()
         infected_days = [0] * Gr.number_of_nodes()
+        
         #Metrics
         inf = 1
         rec = 0
         dead = 0
         days_rem = d
+        
+        #Probability arrays
+        death_rate = [x] * Gr.number_of_nodes()
+        recovery_rate = [r] * Gr.number_of_nodes()
+        symptom_rate = [s] * Gr.number_of_nodes()
+        
+        if x > 0:
+            for i in range(0,Gr.number_of_nodes()):
+                death_rate[i] = 1/np.random.gamma(4.94, 1/.26)
+        if r > 0:
+            for i in range(0,Gr.number_of_nodes()):        
+                recovery_rate[i] = 1/np.random.gamma(8.16, 1/.33)
+        if s > 0:
+            for i in range(0,Gr.number_of_nodes()):          
+                symptom_rate[i] = 1/np.random.gamma(5.81, 1/0.95)      
+        
         #Result arrays
         queue = []
         infected_nodes = []
@@ -113,10 +130,10 @@ def BFS_t(Gr,zero,p,h,d):
                 if infected[i] == True:
                     infected_days[i]+=1
                     if symptomatic[i] == False:
-                            if rand.uniform(0,10) < stats.gamma.pdf(infected_days[i], a=5.81, scale=1/0.95)*10:
+                            if rand.uniform(0,10) < symptom_rate[i]*10:
                                     symptomatic[i] = True
                                     symptomatic_nodes.append(i)
-                            elif rand.uniform(0,10) < stats.gamma.pdf(infected_days[i], a=8.16, scale=1/.33)*10:
+                            elif rand.uniform(0,10) < recovery_rate[i]*10:
                                         recovered[i] = True
                                         rec+=1
                                         inf-=1
@@ -125,11 +142,7 @@ def BFS_t(Gr,zero,p,h,d):
                                         symptomatic[i] = False
                                         infected_nodes.remove(i)
                     else:
-                            if infected_days[i]>25:
-                                rec_rate = math.log(infected_days[i]-25)+stats.gamma.pdf(infected_days[i], a=8.16, scale=1/.33)
-                            else:
-                                rec_rate = stats.gamma.pdf(infected_days[i], a=8.16, scale=1/.33)
-                            if rand.uniform(0,10) < rec_rate*10:
+                            if rand.uniform(0,10) < recovery_rate[i]*10:
                                         recovered[i] = True
                                         rec+=1
                                         inf-=1
@@ -138,7 +151,7 @@ def BFS_t(Gr,zero,p,h,d):
                                         symptomatic[i] = False
                                         symptomatic_nodes.remove(i)
                                         infected_nodes.remove(i)
-                            elif rand.uniform(0,10) < stats.gamma.pdf(infected_days[i], a=4.94, scale=1/.26)*10:
+                            elif rand.uniform(0,10) < death_rate[i]*10:
                                         deceased[i] = True
                                         dead+=1
                                         inf-=1
@@ -178,9 +191,13 @@ starting_node = 10
 beta = 0.1
 quarantine = 0.08
 days = 60
+s_rate = 0
+r_rate = 0
+x_rate = 0
 res = BFS_t(G,starting_node,beta,quarantine,days)
 
+
 print(res)
-plot_numbers_per_day(res[5:], beta, quarantine, days)
+plot_numbers_per_day(res[5:], beta, quarantine, days, s_rate,x_rate, r_rate)
 print(res[6])
 plt.show()
