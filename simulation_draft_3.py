@@ -221,22 +221,28 @@ def BFS_t(Gr,zero,p,h,d,s,x,r):
         return [infected_nodes,quarantined_nodes,symptomatic_nodes,recovered_nodes,deceased_nodes, num_infected_per_day, num_quarantined_per_day, num_symptomatic_per_day, num_recovered_per_day, num_deceased_per_day,num_total_infected,num_sus]
 
 # Returns the average total number of infections per day over n realizations
-def multi_BFS_t(Gr, zero, beta, qrnt, days, n):
-    avg_res_per_day = [[0] * days] * 11
+def multi_BFS_t(Gr, zero, beta, qrnt, days, s_rate, x_rate, r_rate, n):
+    avg_res_per_day = [[0] * days] * 7
 
     for i in range(n):
         print("Simulating realization ", i, "...")
-        res = BFS_t(Gr, zero, beta, qrnt, days)
-        for j in range(11):
-            for k in range(days):
-                avg_res_per_day[j][k] += res[j][k]
+        res = BFS_t(Gr, zero, beta, qrnt, days, s_rate, x_rate, r_rate)[5:]
+        for j in range(len(res)):
+            print(res[j])
+            avg_res_per_day[j] = [x + y for x, y in zip(avg_res_per_day[j], res[j])]
+            # print(res[j])
+            # for k in range(days):
+            #     avg_res_per_day[j][k] += res[j][k]
 
-    for l in range(11):
-        avg_res_per_day[l][:] = [x / n for x in avg_res_per_day[l]] 
+    for l in range(7):
+        for m in range(days):
+            if avg_res_per_day[l][m] != 0:
+                avg_res_per_day[l][m] /= n
+        print(avg_res_per_day[l])
     
     return avg_res_per_day
 
-def plot_numbers_per_day(res, beta, qrnt, days, s_rate,x_rate, r_rate):
+def plot_numbers_per_day(res, beta, qrnt, days):
     days_axis = [i for i in range(1, days+1)]
     labels = ["Infected Per Day", "Cumulative Quarantined", "Symptomatic Per Day", "Recovered Per Day", "Deceased Per Day","Total infections","Susceptible"]
     fig = plt.figure()
@@ -255,10 +261,12 @@ days = 14
 s_rate = -1
 r_rate = -1
 x_rate = -1
+
 res = BFS_t(G,starting_node,beta,quarantine,days,s_rate,x_rate, r_rate)
+plot_numbers_per_day(res[5:], beta, quarantine, days)
+plt.show()
 
-
-print(res)
-plot_numbers_per_day(res[5:], beta, quarantine, days, s_rate,x_rate, r_rate)
-print(res[6])
+# Running multiple realizations
+multi_res = multi_BFS_t(G,starting_node,beta,quarantine,days,s_rate,x_rate, r_rate, 15)
+plot_numbers_per_day(multi_res, beta, quarantine, days)
 plt.show()
