@@ -256,7 +256,7 @@ def plot_numbers_per_day(res, beta, qrnt, days):
 
 starting_node = maxclose
 beta = 0.1
-quarantine = 0
+quarantine = 0.08
 days = 14
 s_rate = -1
 r_rate = -1
