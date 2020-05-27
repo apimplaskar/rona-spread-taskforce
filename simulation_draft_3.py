@@ -37,11 +37,11 @@ def getMaxMinMid(centralities):
     import operator
     length = len(centralities)
     nodelist = list(sorted(centralities.items(), key = operator.itemgetter(1)))
-    
-    mmax = nodelist[length-1][0] 
-    mmin = nodelist[0][0]    
+
+    mmax = nodelist[length-1][0]
+    mmin = nodelist[0][0]
     mmid = nodelist[int(length/2)][0]
-    
+
     return mmax, mmin, mmid
 
 maxpr, minpr, midpr = getMaxMinMid(pagerank)
@@ -114,32 +114,32 @@ def BFS_t(Gr,zero,p,h,d,s,x,r):
         recovered = [False] * Gr.number_of_nodes()
         deceased = [False] * Gr.number_of_nodes()
         infected_days = [0] * Gr.number_of_nodes()
-        
+
         #Metrics
         inf = 1
         rec = 0
         dead = 0
         days_rem = d
-        
+
         #Probability arrays
         death_rate = [x] * Gr.number_of_nodes()
         recovery_rate = [r] * Gr.number_of_nodes()
         symptom_rate = [s] * Gr.number_of_nodes()
-        
+
         if x < 0:
             for i in range(0,Gr.number_of_nodes()):
                 death_rate[i] = 1/np.random.gamma(4.94, 1/.26)
         if r < 0:
-            for i in range(0,Gr.number_of_nodes()):        
+            for i in range(0,Gr.number_of_nodes()):
                 recovery_rate[i] = 1/np.random.gamma(8.16, 1/.33)
-        if s < 0:    
-            for i in range(0,Gr.number_of_nodes()):  
-                symptom_rate[i] = 1/np.random.gamma(5.81, 1/0.95)      
+        if s < 0:
+            for i in range(0,Gr.number_of_nodes()):
+                symptom_rate[i] = 1/np.random.gamma(5.81, 1/0.95)
 
         #Output array
 
         total_output = 0
-        
+
         #Result arrays
         queue = []
         infected_nodes = []
@@ -217,7 +217,7 @@ def BFS_t(Gr,zero,p,h,d,s,x,r):
                                         symptomatic[i] = False
                                         symptomatic_nodes.remove(i)
                                         infected_nodes.remove(i)
-                           
+
 
                     if quarantined[i] == False and recovered[i] == False and deceased[i] == False:
                         queue.append(i)
@@ -241,24 +241,28 @@ def BFS_t(Gr,zero,p,h,d,s,x,r):
         return [infected_nodes,quarantined_nodes,symptomatic_nodes,recovered_nodes,deceased_nodes, num_infected_per_day, num_quarantined_per_day, num_symptomatic_per_day, num_recovered_per_day, num_deceased_per_day,num_total_infected,num_sus,total_output]
 
 # Returns the average total number of infections per day over n realizations
-def multi_BFS_t(Gr, zero, beta, qrnt, days, n):
-    avg_total_inf_per_day = [0] * days
+def multi_BFS_t(Gr, zero, beta, qrnt, days, s_rate, x_rate, r_rate, n):
+    avg_res_per_day = [[0] * days] * 7
 
     for i in range(n):
         print("Simulating realization ", i, "...")
-        res = BFS_t(Gr, zero, beta, qrnt, days)
-        inf_per_day = res[10]
-        for j in range(days):
-            print("Day ", j, ", total infections: ", inf_per_day[j])
-            avg_total_inf_per_day[j] += inf_per_day[j]
+        res = BFS_t(Gr, zero, beta, qrnt, days, s_rate, x_rate, r_rate)[5:]
+        for j in range(len(res)):
+            print(res[j])
+            avg_res_per_day[j] = [x + y for x, y in zip(avg_res_per_day[j], res[j])]
+            # print(res[j])
+            # for k in range(days):
+            #     avg_res_per_day[j][k] += res[j][k]
 
-    for k in range(days):
-        avg_total_inf_per_day[k] /= n
-    
-    print(avg_total_inf_per_day)
-    return avg_total_inf_per_day
+    for l in range(7):
+        for m in range(days):
+            if avg_res_per_day[l][m] != 0:
+                avg_res_per_day[l][m] /= n
+        print(avg_res_per_day[l])
 
-def plot_numbers_per_day(res, beta, qrnt, days, s_rate,x_rate, r_rate):
+    return avg_res_per_day
+
+def plot_numbers_per_day(res, beta, qrnt, days):
     days_axis = [i for i in range(1, days+1)]
     labels = ["Infected Per Day", "Cumulative Quarantined", "Symptomatic Per Day", "Recovered Per Day", "Deceased Per Day","Total infections","Susceptible"]
     fig = plt.figure()
@@ -277,7 +281,10 @@ days = 28
 s_rate = -1
 r_rate = -1
 x_rate = -1
+
 res = BFS_t(G,starting_node,beta,quarantine,days,s_rate,x_rate, r_rate)
+plot_numbers_per_day(res[5:], beta, quarantine, days)
+plt.show()
 
 totals = {}
 
@@ -286,12 +293,7 @@ for i in range(0,21):
 
 print(sorted(totals.items(), key = operator.itemgetter(1)))
 
-
-print(res)
-plot_numbers_per_day(res[5:], beta, quarantine, days, s_rate,x_rate, r_rate)
-print(res[6])
+# Running multiple realizations
+multi_res = multi_BFS_t(G,starting_node,beta,quarantine,days,s_rate,x_rate, r_rate, 15)
+plot_numbers_per_day(multi_res, beta, quarantine, days)
 plt.show()
-# print(res)
-# plot_numbers_per_day(res[5:], beta, quarantine, days)
-# print(res[6])
-# plt.show()
