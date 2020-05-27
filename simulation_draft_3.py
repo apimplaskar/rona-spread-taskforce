@@ -12,6 +12,8 @@ from collections import deque
 import matplotlib.pyplot as plt
 import math
 import scipy.stats as stats
+import operator
+
 
 
 def cleanGraph(Gr):
@@ -86,6 +88,11 @@ Closeness max: 179 | Closeness min: 23 | Closeness mid: 186
 # plt.show()
 
 
+output = [0] * G.number_of_nodes()
+for i in range(0,G.number_of_nodes()):
+    output[i] = rand.random()
+
+
 def BFS_t(Gr,zero,p,h,d,s,x,r):
 
         #Prameters:
@@ -125,9 +132,13 @@ def BFS_t(Gr,zero,p,h,d,s,x,r):
         if r < 0:
             for i in range(0,Gr.number_of_nodes()):        
                 recovery_rate[i] = 1/np.random.gamma(8.16, 1/.33)
-        if s < 0:
-            for i in range(0,Gr.number_of_nodes()):          
+        if s < 0:    
+            for i in range(0,Gr.number_of_nodes()):  
                 symptom_rate[i] = 1/np.random.gamma(5.81, 1/0.95)      
+
+        #Output array
+
+        total_output = 0
         
         #Result arrays
         queue = []
@@ -145,6 +156,7 @@ def BFS_t(Gr,zero,p,h,d,s,x,r):
         num_deceased_per_day    = []
         num_total_infected    = []
         num_sus = []
+        num_new_cases_per_day = []
 
         queue.append(zero)
         infected[zero] = True
@@ -187,16 +199,7 @@ def BFS_t(Gr,zero,p,h,d,s,x,r):
                                         symptomatic[i] = False
                                         infected_nodes.remove(i)
                     else:
-                            if rand.uniform(0,10) < recovery_rate[i]*10:
-                                        recovered[i] = True
-                                        rec+=1
-                                        inf-=1
-                                        recovered_nodes.append(i)
-                                        infected[i] = False
-                                        symptomatic[i] = False
-                                        symptomatic_nodes.remove(i)
-                                        infected_nodes.remove(i)
-                            elif rand.uniform(0,10) < death_rate[i]*10:
+                            if rand.uniform(0,10) < death_rate[i]*10:
                                         deceased[i] = True
                                         dead+=1
                                         inf-=1
@@ -205,10 +208,28 @@ def BFS_t(Gr,zero,p,h,d,s,x,r):
                                         symptomatic[i] = False
                                         symptomatic_nodes.remove(i)
                                         infected_nodes.remove(i)
+                            elif rand.uniform(0,10) < recovery_rate[i]*10:
+                                        recovered[i] = True
+                                        rec+=1
+                                        inf-=1
+                                        recovered_nodes.append(i)
+                                        infected[i] = False
+                                        symptomatic[i] = False
+                                        symptomatic_nodes.remove(i)
+                                        infected_nodes.remove(i)
+                           
 
                     if quarantined[i] == False and recovered[i] == False and deceased[i] == False:
                         queue.append(i)
-
+            for i in range(0,Gr.number_of_nodes()):
+                if quarantined[i] == False and deceased[i] == False and infected[i] == False:
+                    total_output+=output[i]
+                if quarantined[i] == True and infected[i] == False and deceased[i] == False:
+                    total_output+=0.5*output[i]
+                if infected[i] == True and deceased[i] == False:
+                    total_output-=output[i]
+                if deceased[i] == True:
+                    total_output-=2*output[i]
             # Update per-day numbers
             num_infected_per_day.append(inf)
             num_symptomatic_per_day.append(len(symptomatic_nodes))
@@ -217,8 +238,7 @@ def BFS_t(Gr,zero,p,h,d,s,x,r):
             num_deceased_per_day.append(dead)
             num_total_infected.append(inf+rec+dead)
             num_sus.append(Gr.number_of_nodes()-inf-rec-dead)
-
-        return [infected_nodes,quarantined_nodes,symptomatic_nodes,recovered_nodes,deceased_nodes, num_infected_per_day, num_quarantined_per_day, num_symptomatic_per_day, num_recovered_per_day, num_deceased_per_day,num_total_infected,num_sus]
+        return [infected_nodes,quarantined_nodes,symptomatic_nodes,recovered_nodes,deceased_nodes, num_infected_per_day, num_quarantined_per_day, num_symptomatic_per_day, num_recovered_per_day, num_deceased_per_day,num_total_infected,num_sus,total_output]
 
 # Returns the average total number of infections per day over n realizations
 def multi_BFS_t(Gr, zero, beta, qrnt, days, n):
@@ -244,20 +264,27 @@ def plot_numbers_per_day(res, beta, qrnt, days, s_rate,x_rate, r_rate):
     fig = plt.figure()
 
     fig.suptitle("Beta = " + str(beta) + ", Quarantine Rate = " + str(qrnt), fontsize=12)
-    for p in range(len(res)):
+    for p in range(len(res)-1):
         ax = fig.add_subplot(111)
         ax.plot(days_axis, res[p], label=labels[p])
         ax.legend(loc="upper right")
 
 
 starting_node = maxclose
-beta = 0.1
-quarantine = 0
-days = 14
+beta = 0.08
+quarantine = 0.1
+days = 28
 s_rate = -1
 r_rate = -1
 x_rate = -1
 res = BFS_t(G,starting_node,beta,quarantine,days,s_rate,x_rate, r_rate)
+
+totals = {}
+
+for i in range(0,21):
+    totals[round(i*0.05,2)] = BFS_t(G,starting_node,beta,i/20,days,s_rate,x_rate, r_rate)[12]
+
+print(sorted(totals.items(), key = operator.itemgetter(1)))
 
 
 print(res)
