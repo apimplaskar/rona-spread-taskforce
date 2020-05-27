@@ -13,7 +13,52 @@ import matplotlib.pyplot as plt
 import math
 import scipy.stats as stats
 
-G = nx.gnp_random_graph(300,0.1)
+
+def cleanGraph(Gr):
+    # takes gexf file
+    # output: better indexed network, dict of node labels to easier indices
+    inds = {}
+    for i in list(Gr.nodes):
+        inds[i] = Gr.nodes[i]
+    Gr = nx.convert_node_labels_to_integers(Gr)
+    return Gr, inds
+
+day1 = nx.read_gexf("data/sp_data_school_day_1_g.gexf_")
+G, inds = cleanGraph(day1)
+
+pagerank = nx.pagerank(G)
+bet = nx.betweenness_centrality(G)
+close = nx.closeness_centrality(G)
+
+def getMaxMinMid(centralities):
+    # returns node label for max, min, mid
+    import operator
+    length = len(centralities)
+    nodelist = list(sorted(centralities.items(), key = operator.itemgetter(1)))
+    
+    mmax = nodelist[length-1][0] 
+    mmin = nodelist[0][0]    
+    mmid = nodelist[int(length/2)][0]
+    
+    return mmax, mmin, mmid
+
+maxpr, minpr, midpr = getMaxMinMid(pagerank)
+maxbet, minbet, midbet = getMaxMinMid(bet)
+maxclose, minclose, midclose = getMaxMinMid(close)
+
+print("Pagerank max:", maxpr, "| Pagerank min:", minpr, "| Pagerank mid:", midpr)
+print("Betweenness max:", maxbet, "| Betweenness min:", minbet, "| Betweenness mid:", midbet)
+print("Closeness max:", maxclose, "| Closeness min:", minclose, "| Closeness mid:", midclose)
+
+"""
+Pagerank max: 136 | Pagerank min: 23 | Pagerank mid: 223
+Betweenness max: 7 | Betweenness min: 23 | Betweenness mid: 183
+Closeness max: 179 | Closeness min: 23 | Closeness mid: 186
+"""
+
+
+
+#G = nx.gnp_random_graph(300,0.1)
 # x = np.linspace (0, 100, 200)
 
 # y1 = stats.gamma.pdf(x, a=4.94, scale=1/.26)
@@ -203,10 +248,10 @@ def plot_numbers_per_day(res, beta, qrnt, days, s_rate,x_rate, r_rate):
         ax.legend(loc="upper right")
 
 
-starting_node = 10
+starting_node = maxclose
 beta = 0.1
-quarantine = 0.08
-days = 60
+quarantine = 0
+days = 14
 s_rate = -1
 r_rate = -1
 x_rate = -1
