@@ -29,9 +29,8 @@ def getMaxMinMid(centralities):
     length = len(centralities)
     nodelist = list(sorted(centralities.items(), key = operator.itemgetter(1)))
     
-    mmax = nodelist[0][0] 
-    mmin = nodelist[length-1][0]    
-   
+    mmax = nodelist[length-1][0] 
+    mmin = nodelist[0][0]    
     mmid = nodelist[int(length/2)][0]
     
     return mmax, mmin, mmid
