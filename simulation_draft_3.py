@@ -272,15 +272,9 @@ def plot_numbers_per_day(res, beta, qrnt, days):
 
 
 starting_node = maxclose
-<<<<<<< HEAD
-beta = 0.1
-quarantine = 0.08
-days = 14
-=======
 beta = 0.08
 quarantine = 0.1
 days = 28
->>>>>>> refs/remotes/origin/master
 s_rate = -1
 r_rate = -1
 x_rate = -1
