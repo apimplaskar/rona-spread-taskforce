@@ -177,21 +177,19 @@ def BFS_t(Gr,zero,p,h,d,s,x,r):
 
 # Returns the average total number of infections per day over n realizations
 def multi_BFS_t(Gr, zero, beta, qrnt, days, n):
-    avg_total_inf_per_day = [0] * days
+    avg_res_per_day = [[0] * days] * 11
 
     for i in range(n):
         print("Simulating realization ", i, "...")
         res = BFS_t(Gr, zero, beta, qrnt, days)
-        inf_per_day = res[10]
-        for j in range(days):
-            print("Day ", j, ", total infections: ", inf_per_day[j])
-            avg_total_inf_per_day[j] += inf_per_day[j]
+        for j in range(11):
+            for k in range(days):
+                avg_res_per_day[j][k] += res[j][k]
 
-    for k in range(days):
-        avg_total_inf_per_day[k] /= n
+    for l in range(11):
+        avg_res_per_day[l][:] = [x / n for x in avg_res_per_day[l]] 
     
-    print(avg_total_inf_per_day)
-    return avg_total_inf_per_day
+    return avg_res_per_day
 
 def plot_numbers_per_day(res, beta, qrnt, days, s_rate,x_rate, r_rate):
     days_axis = [i for i in range(1, days+1)]
@@ -219,7 +217,3 @@ print(res)
 plot_numbers_per_day(res[5:], beta, quarantine, days, s_rate,x_rate, r_rate)
 print(res[6])
 plt.show()
-# print(res)
-# plot_numbers_per_day(res[5:], beta, quarantine, days)
-# print(res[6])
-# plt.show()
