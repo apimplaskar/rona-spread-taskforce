@@ -245,10 +245,8 @@ def multi_BFS_t(Gr, zero, beta, qrnt, days, s_rate, x_rate, r_rate, n):
     avg_res_per_day = [[0] * days] * 7
 
     for i in range(n):
-        print("Simulating realization ", i, "...")
-        res = BFS_t(Gr, zero, beta, qrnt, days, s_rate, x_rate, r_rate)[5:]
+        res = BFS_t(Gr, zero, beta, qrnt, days, s_rate, x_rate, r_rate)[5:12]
         for j in range(len(res)):
-            print(res[j])
             avg_res_per_day[j] = [x + y for x, y in zip(avg_res_per_day[j], res[j])]
             # print(res[j])
             # for k in range(days):
@@ -258,7 +256,6 @@ def multi_BFS_t(Gr, zero, beta, qrnt, days, s_rate, x_rate, r_rate, n):
         for m in range(days):
             if avg_res_per_day[l][m] != 0:
                 avg_res_per_day[l][m] /= n
-        print(avg_res_per_day[l])
 
     return avg_res_per_day
 
