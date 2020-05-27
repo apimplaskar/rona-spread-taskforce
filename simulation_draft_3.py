@@ -27,7 +27,7 @@ def cleanGraph(Gr):
 
 day1 = nx.read_gexf("data/sp_data_school_day_1_g.gexf_")
 G, inds = cleanGraph(day1)
-
+#G = nx.gnp_random_graph(600,0.1)
 pagerank = nx.pagerank(G)
 bet = nx.betweenness_centrality(G)
 close = nx.closeness_centrality(G)
@@ -60,7 +60,7 @@ Closeness max: 179 | Closeness min: 23 | Closeness mid: 186
 
 
 
-#G = nx.gnp_random_graph(300,0.1)
+
 # x = np.linspace (0, 100, 200)
 
 # y1 = stats.gamma.pdf(x, a=4.94, scale=1/.26)
@@ -241,7 +241,20 @@ def BFS_t(Gr,zero,p,h,d,s,x,r):
         return [infected_nodes,quarantined_nodes,symptomatic_nodes,recovered_nodes,deceased_nodes, num_infected_per_day, num_quarantined_per_day, num_symptomatic_per_day, num_recovered_per_day, num_deceased_per_day,num_total_infected,num_sus,total_output]
 
 # Returns the average total number of infections per day over n realizations
-def multi_BFS_t(Gr, zero, beta, qrnt, days, s_rate, x_rate, r_rate, n):
+def plot_numbers_per_day(res, beta, qrnt, days, prefix):
+    days_axis = [i for i in range(1, days+1)]
+    labels = ["Infected Per Day", "Cumulative Quarantined", "Symptomatic Per Day", "Recovered Per Day", "Deceased Per Day","Total infections","Susceptible"]
+    fig = plt.figure()
+
+    fig.suptitle("Beta = " + str(beta) + ", Quarantine Rate = " + str(qrnt), fontsize=12)
+    for p in range(len(res)-1):
+        ax = fig.add_subplot(111)
+        ax.plot(days_axis, res[p], label=labels[p])
+        ax.legend(loc="upper right")
+    filename = "figure "+ prefix+" " + str(beta) + " " + str(qrnt) +".png"
+    plt.savefig(filename, dpi = 500)   
+        
+def multi_BFS_t(Gr, zero, beta, qrnt, days, s_rate, x_rate, r_rate, n, prefix):
     avg_res_per_day = [[0] * days] * 7
 
     for i in range(n):
@@ -256,31 +269,22 @@ def multi_BFS_t(Gr, zero, beta, qrnt, days, s_rate, x_rate, r_rate, n):
         for m in range(days):
             if avg_res_per_day[l][m] != 0:
                 avg_res_per_day[l][m] /= n
-
+    plot_numbers_per_day(avg_res_per_day, beta, quarantine, days, prefix)
     return avg_res_per_day
 
-def plot_numbers_per_day(res, beta, qrnt, days):
-    days_axis = [i for i in range(1, days+1)]
-    labels = ["Infected Per Day", "Cumulative Quarantined", "Symptomatic Per Day", "Recovered Per Day", "Deceased Per Day","Total infections","Susceptible"]
-    fig = plt.figure()
-
-    fig.suptitle("Beta = " + str(beta) + ", Quarantine Rate = " + str(qrnt), fontsize=12)
-    for p in range(len(res)-1):
-        ax = fig.add_subplot(111)
-        ax.plot(days_axis, res[p], label=labels[p])
-        ax.legend(loc="upper right")
-
+ 
 
 starting_node = maxclose
-beta = 0.08
-quarantine = 0.1
+r_0 = 2.45
+beta = r_0 * 1/24.7
+quarantine = 0.3
 days = 28
 s_rate = -1
 r_rate = -1
 x_rate = -1
 
 res = BFS_t(G,starting_node,beta,quarantine,days,s_rate,x_rate, r_rate)
-plot_numbers_per_day(res[5:], beta, quarantine, days)
+#plot_numbers_per_day(res[5:], beta, quarantine, days)
 plt.show()
 
 totals = {}
@@ -291,6 +295,51 @@ for i in range(0,21):
 print(sorted(totals.items(), key = operator.itemgetter(1)))
 
 # Running multiple realizations
-multi_res = multi_BFS_t(G,starting_node,beta,quarantine,days,s_rate,x_rate, r_rate, 15)
-plot_numbers_per_day(multi_res, beta, quarantine, days)
-plt.show()
+#multi_res = multi_BFS_t(G,starting_node,beta,quarantine,days,s_rate,x_rate, r_rate, 15)
+#plot_numbers_per_day(multi_res, beta, quarantine, days)
+#plt.show()
+
+
+for i in range(0,4):
+    quarantine = 0.25*i
+    closeness_cent= []
+    page_cent=[]
+    betweenness_cent= []
+    
+    
+
+    closeness_cent.append(multi_BFS_t(G,maxclose,beta,quarantine,days,s_rate,x_rate, r_rate, 15, "maxclose")[4][days-1])
+    closeness_cent.append(multi_BFS_t(G,midclose,beta,quarantine,days,s_rate,x_rate, r_rate, 15, "midclose")[4][days-1])
+    closeness_cent.append(multi_BFS_t(G,minclose,beta,quarantine,days,s_rate,x_rate, r_rate, 15, "minclose")[4][days-1])
+
+
+    betweenness_cent.append(multi_BFS_t(G,maxbet,beta,quarantine,days,s_rate,x_rate, r_rate, 15, "maxbet")[4][days-1])
+    betweenness_cent.append(multi_BFS_t(G,midbet,beta,quarantine,days,s_rate,x_rate, r_rate, 15, "midbet")[4][days-1])
+    betweenness_cent.append(multi_BFS_t(G,minbet,beta,quarantine,days,s_rate,x_rate, r_rate, 15, "minbet")[4][days-1])
+
+    page_cent.append(multi_BFS_t(G,maxpr,beta,quarantine,days,s_rate,x_rate, r_rate, 15, "maxpr")[4][days-1])
+    page_cent.append(multi_BFS_t(G,midpr,beta,quarantine,days,s_rate,x_rate, r_rate, 15, "midpr")[4][days-1])
+    page_cent.append(multi_BFS_t(G,minpr,beta,quarantine,days,s_rate,x_rate, r_rate, 15, "minpr")[4][days-1])
+
+   # closeness_cent.append(multi_BFS_t(G,maxclose,beta,quarantine,days,s_rate,x_rate, r_rate, 15)[5][days-1])
+  #  closeness_cent.append(multi_BFS_t(G,midclose,beta,quarantine,days,s_rate,x_rate, r_rate, 15)[5][days-1])
+   # closeness_cent.append(multi_BFS_t(G,minclose,beta,quarantine,days,s_rate,x_rate, r_rate, 15)[5][days-1])
+
+
+  #  betweenness_cent.append(multi_BFS_t(G,maxbet,beta,quarantine,days,s_rate,x_rate, r_rate, 15)[5][days-1])
+   # betweenness_cent.append(multi_BFS_t(G,midbet,beta,quarantine,days,s_rate,x_rate, r_rate, 15)[5][days-1])
+   # betweenness_cent.append(multi_BFS_t(G,minbet,beta,quarantine,days,s_rate,x_rate, r_rate, 15)[5][days-1])
+
+   # page_cent.append(multi_BFS_t(G,maxpr,beta,quarantine,days,s_rate,x_rate, r_rate, 15)[5][days-1])
+   # page_cent.append(multi_BFS_t(G,midpr,beta,quarantine,days,s_rate,x_rate, r_rate, 15)[5][days-1])
+   # page_cent.append(multi_BFS_t(G,minpr,beta,quarantine,days,s_rate,x_rate, r_rate, 15)[5][days-1])
+
+
+    print(closeness_cent)
+    print(betweenness_cent)
+    print(page_cent)
+
+
+
+
+
