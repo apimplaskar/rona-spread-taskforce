@@ -137,7 +137,16 @@ def BFS_t(Gr,zero,p,h,d,s,x,r):
                 symptom_rate[i] = 1/np.random.gamma(5.81, 1/0.95)
 
         #Output array
-
+        GDP_per_capita = 62886.8
+        GDP_daily_per_capita = GDP_per_capita / 365
+        life_expectancy = 78.6
+        hospital_rate = 0.13
+        hospital_cost = 14366
+        symptom_cost = 3045
+        infected_cost = hospital_cost*hospital_rate + symptom_cost*(1-hospital_rate)
+        death_cost = 10000000 / (life_expectancy * 365)
+        
+        
         total_output = 0
 
         #Result arrays
@@ -222,14 +231,14 @@ def BFS_t(Gr,zero,p,h,d,s,x,r):
                     if quarantined[i] == False and recovered[i] == False and deceased[i] == False:
                         queue.append(i)
             for i in range(0,Gr.number_of_nodes()):
-                if quarantined[i] == False and deceased[i] == False and infected[i] == False:
-                    total_output+=output[i]
-                if quarantined[i] == True and infected[i] == False and deceased[i] == False:
-                    total_output+=0.5*output[i]
-                if infected[i] == True and deceased[i] == False:
-                    total_output-=output[i]
-                if deceased[i] == True:
-                    total_output-=2*output[i]
+                if quarantined[i] == False and deceased[i] == False and symptomatic[i] == False:
+                    total_output+=GDP_daily_per_capita
+                elif quarantined[i] == True and deceased[i] == False and symptomatic[i] == False:
+                    total_output+=0.5*GDP_daily_per_capita
+                elif symptomatic[i] == True and deceased[i] == False:
+                    total_output-= infected_cost
+                elif deceased[i] == True:
+                    total_output-= death_cost
             # Update per-day numbers
             num_infected_per_day.append(inf)
             num_symptomatic_per_day.append(len(symptomatic_nodes))
@@ -251,8 +260,8 @@ def plot_numbers_per_day(res, beta, qrnt, days, prefix):
         ax = fig.add_subplot(111)
         ax.plot(days_axis, res[p], label=labels[p])
         ax.legend(loc="upper right")
-    filename = "figure "+ prefix+" " + str(beta) + " " + str(qrnt) +".png"
-    plt.savefig(filename, dpi = 500)   
+   # filename = "figure "+ prefix+" " + str(beta) + " " + str(qrnt) +".png"
+    #plt.savefig(filename, dpi = 500)   
         
 def multi_BFS_t(Gr, zero, beta, qrnt, days, s_rate, x_rate, r_rate, n, prefix):
     avg_res_per_day = [[0] * days] * 7
@@ -285,21 +294,28 @@ x_rate = -1
 
 res = BFS_t(G,starting_node,beta,quarantine,days,s_rate,x_rate, r_rate)
 #plot_numbers_per_day(res[5:], beta, quarantine, days)
-plt.show()
+#plt.show()
 
 totals = {}
 
-for i in range(0,21):
-    totals[round(i*0.05,2)] = BFS_t(G,starting_node,beta,i/20,days,s_rate,x_rate, r_rate)[12]
+for i in range(1,21):
+    avg_out = 0
+    for j in range(50):
+        avg_out += BFS_t(G,starting_node,beta,i/20,days,s_rate,x_rate, r_rate)[12]
+    totals[round(i*0.05,2)] = round(avg_out/50,3)
+
 
 print(sorted(totals.items(), key = operator.itemgetter(1)))
-
+log_fit = np.polyfit(np.log(list(totals.keys())),list(totals.values()),1)
+plt.plot(np.log(list(totals.keys())), log_fit[0]*np.log(list(totals.keys())) + log_fit[1])
+plt.plot(np.log(list(totals.keys())),list(totals.values()))
+plt.show()
 # Running multiple realizations
 #multi_res = multi_BFS_t(G,starting_node,beta,quarantine,days,s_rate,x_rate, r_rate, 15)
 #plot_numbers_per_day(multi_res, beta, quarantine, days)
 #plt.show()
 
-
+"""
 for i in range(0,4):
     quarantine = 0.25*i
     closeness_cent= []
@@ -339,7 +355,7 @@ for i in range(0,4):
     print(betweenness_cent)
     print(page_cent)
 
-
+"""
 
 
 
