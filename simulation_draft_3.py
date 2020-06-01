@@ -261,8 +261,8 @@ def plot_numbers_per_day(res, beta, qrnt, days, prefix):
         ax = fig.add_subplot(111)
         ax.plot(days_axis, res[p], label=labels[p])
         ax.legend(loc="upper right")
-   # filename = "figure "+ prefix+" " + str(beta) + " " + str(qrnt) +".png"
-    #plt.savefig(filename, dpi = 500)   
+        filename = "figure "+ prefix+" " + str(beta) + " " + str(qrnt) +".png"
+        plt.savefig(filename, dpi = 500)   
         
 def multi_BFS_t(Gr, zero, beta, qrnt, days, s_rate, x_rate, r_rate, n, prefix):
     avg_res_per_day = [[0] * days] * 7
@@ -279,7 +279,7 @@ def multi_BFS_t(Gr, zero, beta, qrnt, days, s_rate, x_rate, r_rate, n, prefix):
         for m in range(days):
             if avg_res_per_day[l][m] != 0:
                 avg_res_per_day[l][m] /= n
-    plot_numbers_per_day(avg_res_per_day, beta, quarantine, days, prefix)
+    plot_numbers_per_day(avg_res_per_day, beta, qrnt, days, prefix)
     return avg_res_per_day
 
  
@@ -314,8 +314,8 @@ plt.show()
 plt.savefig("Quarantine Log Curve", dpi = 500)  
 
 
-
-
+multi_BFS_t(G,starting_node, beta,0.9,days,s_rate,x_rate, r_rate, 50, "Quarantine 0.9")
+plt.show()
 
 # Running multiple realizations
 #multi_res = multi_BFS_t(G,starting_node,beta,quarantine,days,s_rate,x_rate, r_rate, 15)
