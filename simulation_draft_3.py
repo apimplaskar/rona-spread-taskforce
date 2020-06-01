@@ -287,7 +287,7 @@ start_random = rand.randint(0,G.number_of_nodes()-1)
 starting_node = start_random
 r_0 = 2.45
 beta = r_0 * 1/24.7
-quarantine = 0.9
+quarantine = 0.6
 days = 28
 s_rate = -1
 r_rate = -1
@@ -307,29 +307,47 @@ for i in range(1,21):
 
 
 print(sorted(totals.items(), key = operator.itemgetter(1)))
+
 log_fit = np.polyfit(np.log(list(totals.keys())),list(totals.values()),1)
 logfig = plt.figure()
 logfig.suptitle("Network Value over Quarantine Rates")
 ax1 = logfig.add_subplot(111)
-ax1.plot(np.log(list(totals.keys())), log_fit[0]*np.log(list(totals.keys())) + log_fit[1])
+ax1.plot(np.log(list(totals.keys())), log_fit[0]*np.log(list(totals.keys())) + log_fit[1],label = "Linear Regression")
 ax2 = logfig.add_subplot(111)
-ax2.plot(np.log(list(totals.keys())),list(totals.values()))
+ax2.plot(np.log(list(totals.keys())),list(totals.values()), label = "Quarantine Log Curve")
 ax2.set_xlabel("Quarantine Rate (Logarithmic)")
 ax2.set_ylabel("Network Cost-Benefit Value")
-
+ax2.legend(loc="upper left")
 plt.savefig("Quarantine Log Curve", dpi = 500)  
+
+
+qrtfig = plt.figure()
+qrtfig.suptitle("Network Value over Quarantine Rates")
+ax2 = qrtfig.add_subplot(111)
+ax2.plot(list(totals.keys()),list(totals.values()))
+ax2.set_xlabel("Quarantine Rate")
+ax2.set_ylabel("Network Cost-Benefit Value")
+plt.savefig("Quarantine Curve", dpi = 500)  
+
+#
 plt.show()
 qrt_09 = multi_BFS_t(G,starting_node, beta,0.9,days,s_rate,x_rate, r_rate, 50, "Quarantine 0.9")
 for i in range(0,len(qrt_09)):
     print(qrt_09[i][27])
 print(qrt_09)
 
-plt.savefig("Quarantine 09", dpi = 500)  
+#plt.savefig("Quarantine 09", dpi = 500)  
 plt.show()
 for i in totals.items():
     print(str(i[1])+"&")
     
+qrt_05 = multi_BFS_t(G,starting_node, beta,0.05,days,s_rate,x_rate, r_rate, 50, "Quarantine 0.05")
+plt.savefig("Quarantine 005", dpi = 500) 
 
+
+qrt_06 = multi_BFS_t(G,starting_node, beta,0.5,days,s_rate,x_rate, r_rate, 50, "Quarantine 0.9")
+plt.show()
+plt.savefig("Quarantine 06", dpi = 500) 
 # Running multiple realizations
 #multi_res = multi_BFS_t(G,starting_node,beta,quarantine,days,s_rate,x_rate, r_rate, 15)
 #plot_numbers_per_day(multi_res, beta, quarantine, days)
