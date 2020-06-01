@@ -8,6 +8,7 @@ Created on Sun May 17 14:14:33 2020
 import networkx as nx
 import numpy as np
 import numpy.random as rand
+import random
 from collections import deque
 import matplotlib.pyplot as plt
 import math
@@ -282,8 +283,8 @@ def multi_BFS_t(Gr, zero, beta, qrnt, days, s_rate, x_rate, r_rate, n, prefix):
     return avg_res_per_day
 
  
-
-starting_node = maxclose
+start_random = rand.randint(0,G.number_of_nodes()-1)
+starting_node = start_random
 r_0 = 2.45
 beta = r_0 * 1/24.7
 quarantine = 0.3
@@ -297,11 +298,11 @@ res = BFS_t(G,starting_node,beta,quarantine,days,s_rate,x_rate, r_rate)
 #plt.show()
 
 totals = {}
-
+rand_list = random.sample(range(0, G.number_of_nodes()), 50)
 for i in range(1,21):
     avg_out = 0
     for j in range(50):
-        avg_out += BFS_t(G,starting_node,beta,i/20,days,s_rate,x_rate, r_rate)[12]
+        avg_out += BFS_t(G,rand_list[j],beta,i/20,days,s_rate,x_rate, r_rate)[12]
     totals[round(i*0.05,2)] = round(avg_out/50,3)
 
 
@@ -310,6 +311,12 @@ log_fit = np.polyfit(np.log(list(totals.keys())),list(totals.values()),1)
 plt.plot(np.log(list(totals.keys())), log_fit[0]*np.log(list(totals.keys())) + log_fit[1])
 plt.plot(np.log(list(totals.keys())),list(totals.values()))
 plt.show()
+plt.savefig("Quarantine Log Curve", dpi = 500)  
+
+
+
+
+
 # Running multiple realizations
 #multi_res = multi_BFS_t(G,starting_node,beta,quarantine,days,s_rate,x_rate, r_rate, 15)
 #plot_numbers_per_day(multi_res, beta, quarantine, days)
