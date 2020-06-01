@@ -308,8 +308,14 @@ for i in range(1,21):
 
 print(sorted(totals.items(), key = operator.itemgetter(1)))
 log_fit = np.polyfit(np.log(list(totals.keys())),list(totals.values()),1)
-plt.plot(np.log(list(totals.keys())), log_fit[0]*np.log(list(totals.keys())) + log_fit[1])
-plt.plot(np.log(list(totals.keys())),list(totals.values()))
+logfig = plt.figure()
+logfig.suptitle("Network Value over Quarantine Rates")
+ax1 = logfig.add_subplot(111)
+ax1.plot(np.log(list(totals.keys())), log_fit[0]*np.log(list(totals.keys())) + log_fit[1])
+ax2 = logfig.add_subplot(111)
+ax2.plot(np.log(list(totals.keys())),list(totals.values()))
+ax2.set_xlabel("Quarantine Rate")
+ax2.set_ylabel("Network Cost-Benefit Value")
 plt.show()
 plt.savefig("Quarantine Log Curve", dpi = 500)  
 
