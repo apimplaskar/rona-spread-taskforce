@@ -228,7 +228,7 @@ def BFS_t(Gr,zero,p,h,d,s,x,r):
                                         symptomatic_nodes.remove(i)
                                         infected_nodes.remove(i)
 
-
+ 
                     if quarantined[i] == False and recovered[i] == False and deceased[i] == False:
                         queue.append(i)
             for i in range(0,Gr.number_of_nodes()):
