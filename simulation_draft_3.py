@@ -106,7 +106,12 @@ def BFS_t(Gr,zero,p,h,d,s,x,r):
         #r - probability of recovering
         #x - probability of death
         #d - number of days simulation is run
-
+        if d%2 == 0:
+           nrows = int(d/2)
+        else:
+           nrows = int(d/2)+1
+        ncols = 2
+        #f, axes = plt.subplots(nrows, ncols, figsize = (40,40))
 
         #Status arrays
         infected = [False] * Gr.number_of_nodes()
@@ -166,7 +171,6 @@ def BFS_t(Gr,zero,p,h,d,s,x,r):
         num_deceased_per_day    = []
         num_total_infected    = []
         num_sus = []
-        num_new_cases_per_day = []
 
         queue.append(zero)
         infected[zero] = True
@@ -228,7 +232,7 @@ def BFS_t(Gr,zero,p,h,d,s,x,r):
                                         symptomatic_nodes.remove(i)
                                         infected_nodes.remove(i)
 
- 
+     
                     if quarantined[i] == False and recovered[i] == False and deceased[i] == False:
                         queue.append(i)
             for i in range(0,Gr.number_of_nodes()):
@@ -248,6 +252,41 @@ def BFS_t(Gr,zero,p,h,d,s,x,r):
             num_deceased_per_day.append(dead)
             num_total_infected.append(inf+rec+dead)
             num_sus.append(Gr.number_of_nodes()-inf-rec-dead)
+            
+            
+            colvec = [0]* Gr.number_of_nodes()
+            for i in range(Gr.number_of_nodes()):
+                if quarantined[i] == False and infected[i] == False and deceased[i] == False:
+                    colvec[i] = "g"
+                if quarantined[i]:
+                    colvec[i] = 'b'
+                if deceased[i]:
+                    colvec[i] = 'r'
+                if infected[i]:
+                    colvec[i] = 'y'
+                if symptomatic[i]:
+                    colvec[i] = 'm'
+                if recovered[i]:
+                    colvec[i] = 'c'
+                ColorLegend = {"Recovered": "c", "Asymptomatic":"y", "Symptomatic":"m", "Deceased":"r", "Quarantined and Healthy":"b", "Healthy": "g"}
+
+            if days_rem == 0 or days_rem == 14 or days_rem == 27:
+                fig = plt.figure(figsize = (10,10))
+                fig.suptitle("Network-wide infection spread at the end of day " + str(d - days_rem))
+                #n = nx.draw_networkx(Gr, pos=nx.kamada_kawai_layout(Gr), node_color=colvec, cmap=plt.cm.rainbow) #visualizes
+                layout = nx.kamada_kawai_layout(Gr)
+                ax = fig.add_subplot(1,1,1)
+                for label in ColorLegend:
+                    ax.plot([0],[0],color=ColorLegend[label],label=label)
+                nx.draw_networkx_nodes(Gr, pos = layout, node_color = colvec)
+                nx.draw_networkx_edges(Gr, pos = layout, alpha = 0.6)
+                plt.axis('off')
+                sm = plt.cm.ScalarMappable(cmap=plt.cm.rainbow, norm = None)
+                sm.set_array([])
+                plt.legend()
+                #cbar = plt.colorbar(sm)
+                plt.savefig("Network-wide infection spread at the end of day " + str(d - days_rem), dpi = 500)
+                
         return [infected_nodes,quarantined_nodes,symptomatic_nodes,recovered_nodes,deceased_nodes, num_infected_per_day, num_quarantined_per_day, num_symptomatic_per_day, num_recovered_per_day, num_deceased_per_day,num_total_infected,num_sus,total_output]
 
 # Returns the average total number of infections per day over n realizations
@@ -287,15 +326,18 @@ start_random = rand.randint(0,G.number_of_nodes()-1)
 starting_node = start_random
 r_0 = 2.45
 beta = r_0 * 1/24.7
-quarantine = 0.6
+quarantine = 0.3
 days = 28
 s_rate = -1
 r_rate = -1
 x_rate = -1
 
-res = BFS_t(G,starting_node,beta,quarantine,days,s_rate,x_rate, r_rate)
+#res = BFS_t(G,starting_node,beta,quarantine,days,s_rate,x_rate, r_rate)
+BFS_t(G,starting_node,beta,quarantine,days,s_rate,x_rate, r_rate)
 #plot_numbers_per_day(res[5:], beta, quarantine, days)
 #plt.show()
+
+"""
 
 totals = {}
 rand_list = random.sample(range(0, G.number_of_nodes()), 50)
@@ -353,7 +395,7 @@ plt.savefig("Quarantine 06", dpi = 500)
 #plot_numbers_per_day(multi_res, beta, quarantine, days)
 #plt.show()
 
-"""
+
 for i in range(0,4):
     quarantine = 0.25*i
     closeness_cent= []
@@ -393,7 +435,6 @@ for i in range(0,4):
     print(betweenness_cent)
     print(page_cent)
 
+
+
 """
-
-
-

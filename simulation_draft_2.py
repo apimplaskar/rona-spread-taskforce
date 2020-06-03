@@ -116,24 +116,24 @@ def BFS_t(Gr,zero,p,s,h,r,x,d):
             
             numInfected.append(inf)
 
-        colvec = [0]* Gr.number_of_nodes()
-        for i in range(Gr.number_of_nodes()):
-            if quarantined[i]:
-                colvec[i] = 'b'
-            elif symptomatic[i]:
-                colvec[i] = 'r'
-            elif infected[i]:
-                colvec[i] = 'y'
-            else:
-                colvec[i] = 'g'
+            colvec = [0]* Gr.number_of_nodes()
+            for i in range(Gr.number_of_nodes()):
+                if quarantined[i]:
+                    colvec[i] = 'b'
+                elif symptomatic[i]:
+                    colvec[i] = 'r'
+                elif infected[i]:
+                    colvec[i] = 'y'
+                else:
+                    colvec[i] = 'g'
 
-        #n = nx.draw_networkx(Gr, pos=nx.kamada_kawai_layout(Gr), node_color=colvec, cmap=plt.cm.rainbow, ax = axes[int((d-days_rem-1)/2)][(d-days_rem-1)%2]) #visualizes
-       # layout = nx.kamada_kawai_layout(Gr)
-        #nx.draw_networkx_nodes(Gr, pos = layout, node_color = colvec, ax = axes[int((d-days_rem-1)/2)][(d-days_rem-1)%2])
-        #nx.draw_networkx_edges(Gr, pos = layout, ax = axes[int((d-days_rem-1)/2)][(d-days_rem-1)%2])
-        #sm = plt.cm.ScalarMappable(cmap=plt.cm.rainbow, norm = None)
-        #m.set_array([])
-        #cbar = plt.colorbar(sm)
+            n = nx.draw_networkx(Gr, pos=nx.kamada_kawai_layout(Gr), node_color=colvec, cmap=plt.cm.rainbow, ax = axes[int((d-days_rem-1)/2)][(d-days_rem-1)%2]) #visualizes
+            layout = nx.kamada_kawai_layout(Gr)
+            nx.draw_networkx_nodes(Gr, pos = layout, node_color = colvec, ax = axes[int((d-days_rem-1)/2)][(d-days_rem-1)%2])
+            nx.draw_networkx_edges(Gr, pos = layout, ax = axes[int((d-days_rem-1)/2)][(d-days_rem-1)%2])
+            sm = plt.cm.ScalarMappable(cmap=plt.cm.rainbow, norm = None)
+            sm.set_array([])
+            cbar = plt.colorbar(sm)
 
         return [infected_nodes,quarantined_nodes,symptomatic_nodes,recovered_nodes,deceased_nodes, numInfected]
 
