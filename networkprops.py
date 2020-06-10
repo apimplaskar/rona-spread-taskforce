@@ -35,11 +35,11 @@ plt.savefig("DegreeDist.png", dpi = 500)
 
 neighbor_degs = nx.average_neighbor_degree(G).values()
 
-print("radius: %d" % nx.radius(G))
-print("diameter: %d" % nx.diameter(G))
-print("average shortest path: %d" % nx.average_shortest_path_length(G))
-print("average degree: %d" % np.mean(degrees))
-print("average neighbor's degree: %d" % np.mean(list(neighbor_degs)))
+print("radius: %f" % nx.radius(G))
+print("diameter: %f" % nx.diameter(G))
+print("average shortest path: %f" % nx.average_shortest_path_length(G))
+print("average degree: %f" % np.mean(degrees))
+print("average neighbor's degree: %f" % np.mean(list(neighbor_degs)))
 
 
 """
